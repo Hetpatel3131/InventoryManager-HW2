@@ -311,3 +311,125 @@ def test_validate_rejects_invalid_item(
         im.validate_new_item(sample_inventory, name, category, quantity)
 
     assert sample_inventory == before
+
+
+def test_summary_counts_items_quantities_and_categories(sample_inventory):
+    # Arrange
+    before = deepcopy(sample_inventory)
+    expected = {
+        "unique_items": 5,
+        "total_quantity": 54,
+        "low_stock_items": 1,
+        "category_counts": {
+            "electronics": 2,
+            "office supplies": 2,
+            "classroom supplies": 1,
+        },
+    }
+
+    # Act
+    result = im.calculate_summary(sample_inventory)
+
+    # Assert
+    assert result == expected
+    assert sample_inventory == before
+
+
+def test_summary_for_empty_inventory():
+    # Arrange
+    inventory = []
+
+    # Act
+    result = im.calculate_summary(inventory)
+
+    # Assert
+    assert result == {
+        "unique_items": 0,
+        "total_quantity": 0,
+        "low_stock_items": 0,
+        "category_counts": {},
+    }
+
+
+@pytest.mark.parametrize(
+    "quantity, expected_low_stock",
+    [
+        (0, 1),
+        (4, 1),
+        (5, 0),
+        (6, 0),
+    ],
+    ids=["zero", "four-low", "five-not-low", "six-not-low"],
+)
+def test_summary_low_stock_boundary(quantity, expected_low_stock):
+    # Arrange
+    inventory = [
+        {"name": "Pen", "category": "Office", "quantity": quantity}
+    ]
+
+    # Act
+    result = im.calculate_summary(inventory)
+
+    # Assert
+    assert result["low_stock_items"] == expected_low_stock
+
+
+def test_summary_counts_items_quantities_and_categories(sample_inventory):
+    # Arrange
+    before = deepcopy(sample_inventory)
+    expected = {
+        "unique_items": 5,
+        "total_quantity": 54,
+        "low_stock_items": 1,
+        "category_counts": {
+            "electronics": 2,
+            "office supplies": 2,
+            "classroom supplies": 1,
+        },
+    }
+
+    # Act
+    result = im.calculate_summary(sample_inventory)
+
+    # Assert
+    assert result == expected
+    assert sample_inventory == before
+
+
+def test_summary_for_empty_inventory():
+    # Arrange
+    inventory = []
+
+    # Act
+    result = im.calculate_summary(inventory)
+
+    # Assert
+    assert result == {
+        "unique_items": 0,
+        "total_quantity": 0,
+        "low_stock_items": 0,
+        "category_counts": {},
+    }
+
+
+@pytest.mark.parametrize(
+    "quantity, expected_low_stock",
+    [
+        (0, 1),
+        (4, 1),
+        (5, 0),
+        (6, 0),
+    ],
+    ids=["zero", "four-low", "five-not-low", "six-not-low"],
+)
+def test_summary_low_stock_boundary(quantity, expected_low_stock):
+    # Arrange
+    inventory = [
+        {"name": "Pen", "category": "Office", "quantity": quantity}
+    ]
+
+    # Act
+    result = im.calculate_summary(inventory)
+
+    # Assert
+    assert result["low_stock_items"] == expected_low_stock
