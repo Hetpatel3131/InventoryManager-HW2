@@ -1,27 +1,24 @@
+# AI Usage — Homework 2
 
+## Tool used
+I used ChatGPT to help me work through Homework 2 in GitHub Codespaces.
 
-## Homework 2 — Automated Testing
+## How AI helped
+I used ChatGPT to get step-by-step setup and Git instructions, plus drafts for the refactored Inventory Manager code and the pytest test suite. Whenever I got stuck, I asked it for troubleshooting tips—like figuring out why my ZIP file wasn't extracting and how to fix an indentation error in my test file. I pasted the code into my project and ran the commands in Codespaces.
 
-### Tool used
-I used ChatGPT as a coding assistant to help complete Homework 2 in GitHub Codespaces.
+## Example prompts, paraphrased
+- How do I set this up using GitHub and Codespaces step by step?
+- Where do I need to create these files and paste the code?
+- Why am I getting this IndentationError when I run pytest, and how do I fix it?
 
-### How AI helped
-ChatGPT provided foundational setup instructions, draft refactorings for the Python logic, and sample pytest structures. It also served as a reference for terminal commands and test organization.
+## Suggestions I accepted
+I went with the suggestion to use helper functions to keep the inventory logic separate from keyboard input and printed output. I also used the sample inventory fixture, parameterized tests with clear IDs, and `tmp_path` for testing file operations. The test suite covers loading, saving, searching, deleting items, updating quantities, checking new-item validation, and running inventory summaries.
 
-### Example prompts, paraphrased
-- Give me step-by-step instructions for completing this assignment using
-  GitHub and Codespaces in a web browser.
-- Tell me where to structure files and how to organize the test suite.
-- Explain the cause of a terminal indentation error so I could fix it.
+## Suggestions I modified or did not use
+The initial unzip command didn't work because my checkpoint was already an extracted folder, so with some guidance from AI, I just copied the files I needed manually. When I messed up a manual paste and caused an indentation error, I swapped out the test file for a cleanly spaced version and added the rest of the tests using terminal commands. I didn't end up throwing out any specific test cases.
 
-### Suggestions I accepted
-I utilized helper functions to separate inventory logic from input/output, incorporated fixture concepts like `tmp_path`, and adopted parameterized testing formats to check inventory loading, saving, searching, and summary calculations.
+## How I verified the work
+I ran `python -m pytest -v` in my Codespaces terminal and made sure all 47 test cases passed. Then I ran `python inventory_manager.py` to test viewing the inventory, searching for `CHARGER`, checking the summary, and exiting. I compared the outputs against the sample inventory, made sure `inventory.txt` didn't change unexpectedly, and checked my Git diffs before committing everything.
 
-### Suggestions I modified or did not use
-I independently handled environment differences, such as bypassing the initial unzip command because my checkpoint was already extracted, and manually copying the required files instead. When a manual paste caused an indentation error, I restructured and fixed the spacing myself, appending subsequent tests via terminal commands. I reviewed and adapted all generated code to fit my workflow rather than copying it blindly.
-
-### How I verified the work
-I independently executed `python -m pytest -v` in my Codespaces virtual environment and verified that all 47 test cases passed successfully. I ran `python inventory_manager.py` to manually test inventory viewing, searching for `CHARGER`, and summary generation. I inspected `inventory.txt`, reviewed the Git differences line-by-line before committing, and verified that my changes behaved as expected.
-
-### Responsibility
-I am responsible for 71% of this project, encompassing the active environment setup, resolving file structure differences, debugging paste errors, running all verifications, and personally reviewing and owning the final submitted code. AI served as a supporting assistant for drafting initial logic and tests.
+## Responsibility
+Even though AI helped me write the code, tests, and troubleshoot some errors, I’m the one who ran everything, verified it works, and made sure I actually understand what the code is doing.
