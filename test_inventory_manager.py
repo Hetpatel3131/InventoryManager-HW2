@@ -112,3 +112,49 @@ def test_save_and_load_round_trip(tmp_path, sample_inventory):
     # Assert
     assert result == expected
     assert sample_inventory == expected
+
+
+@pytest.mark.parametrize(
+    "term, expected_indices",
+    [
+        ("Laptop Charger", [0]),
+        ("Cable", [1]),
+        ("CHARGER", [0]),
+        ("a", [0, 1, 2, 3]),
+        ("not-found", []),
+    ],
+    ids=[
+        "exact",
+        "partial",
+        "case-insensitive",
+        "multiple-matches",
+        "no-match",
+    ],
+)
+def test_search_results(sample_inventory, term, expected_indices):
+    # Arrange
+    before = deepcopy(sample_inventory)
+    expected = [before[index] for index in expected_indices]
+
+    # Act
+    result = im.find_matching_items(sample_inventory, term)
+
+    # Assert
+    assert result == expected
+    assert sample_inventory == before
+
+
+@pytest.mark.parametrize(
+    "term",
+    ["", "   "],
+    ids=["empty", "spaces"],
+)
+def test_search_rejects_blank_terms(sample_inventory, term):
+    # Arrange
+    before = deepcopy(sample_inventory)
+
+    # Act and Assert
+    with pytest.raises(ValueError, match="Search term cannot be empty"):
+        im.find_matching_items(sample_inventory, term)
+
+    assert sample_inventory == before
