@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.env
+*.log
+.DS_Store
+CPS310_HW1_Solution_Checkpoint.zip
+CPS310_HW1_Solution_Checkpoint/
