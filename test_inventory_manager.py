@@ -158,3 +158,156 @@ def test_search_rejects_blank_terms(sample_inventory, term):
         im.find_matching_items(sample_inventory, term)
 
     assert sample_inventory == before
+
+@pytest.mark.parametrize(
+    "number, remaining_indices",
+    [
+        (1, [1, 2, 3, 4]),
+        (3, [0, 1, 3, 4]),
+        (5, [0, 1, 2, 3]),
+    ],
+    ids=["first", "middle", "last"],
+)
+def test_remove_correct_item(sample_inventory, number, remaining_indices):
+    # Arrange
+    before = deepcopy(sample_inventory)
+    expected = [before[index] for index in remaining_indices]
+
+    # Act
+    removed = im.remove_item_by_number(sample_inventory, number)
+
+    # Assert
+    assert sample_inventory == expected
+    assert removed == before[number - 1]
+
+
+@pytest.mark.parametrize(
+    "number",
+    [0, -1, 6],
+    ids=["zero", "negative", "too-large"],
+)
+def test_remove_rejects_invalid_numbers(sample_inventory, number):
+    # Arrange
+    before = deepcopy(sample_inventory)
+
+    # Act and Assert
+    with pytest.raises(ValueError, match="outside the available range"):
+        im.remove_item_by_number(sample_inventory, number)
+
+    assert sample_inventory == before
+
+
+@pytest.mark.parametrize(
+    "quantity",
+    [7, 0],
+    ids=["positive", "zero"],
+)
+def test_update_changes_only_selected_item(sample_inventory, quantity):
+    # Arrange
+    expected = deepcopy(sample_inventory)
+    expected[1]["quantity"] = quantity
+
+    # Act
+    result = im.update_item_quantity(sample_inventory, 2, quantity)
+
+    # Assert
+    assert sample_inventory == expected
+    assert result == expected[1]
+
+
+@pytest.mark.parametrize(
+    "number",
+    [0, -1, 6],
+    ids=["zero", "negative", "too-large"],
+)
+def test_update_rejects_invalid_numbers(sample_inventory, number):
+    # Arrange
+    before = deepcopy(sample_inventory)
+
+    # Act and Assert
+    with pytest.raises(ValueError, match="outside the available range"):
+        im.update_item_quantity(sample_inventory, number, 10)
+
+    assert sample_inventory == before
+
+
+@pytest.mark.parametrize(
+    "quantity",
+    [-1, "six", "2.5"],
+    ids=["negative", "nonnumeric", "fractional"],
+)
+def test_update_rejects_invalid_quantities(sample_inventory, quantity):
+    # Arrange
+    before = deepcopy(sample_inventory)
+
+    # Act and Assert
+    with pytest.raises(ValueError, match="nonnegative whole number"):
+        im.update_item_quantity(sample_inventory, 2, quantity)
+
+    assert sample_inventory == before
+
+
+@pytest.mark.parametrize(
+    "quantity",
+    ["6", "0"],
+    ids=["normal", "zero"],
+)
+def test_validate_accepts_new_item(sample_inventory, quantity):
+    # Arrange
+    before = deepcopy(sample_inventory)
+    expected_quantity = 6 if quantity == "6" else 0
+
+    # Act
+    result = im.validate_new_item(
+        sample_inventory, " HDMI Cable ", " Electronics ", quantity
+    )
+
+    # Assert
+    assert result == {
+        "name": "HDMI Cable",
+        "category": "Electronics",
+        "quantity": expected_quantity,
+    }
+    assert sample_inventory == before
+
+
+@pytest.mark.parametrize(
+    "name, category, quantity, message",
+    [
+        ("", "Office", "1", "Item name cannot be empty"),
+        ("   ", "Office", "1", "Item name cannot be empty"),
+        ("Pen", "", "1", "Category cannot be empty"),
+        ("Pen", "   ", "1", "Category cannot be empty"),
+        ("Pen|Blue", "Office", "1", "Item name may not contain"),
+        ("Pen", "Office|School", "1", "Category may not contain"),
+        ("Pen", "Office", "-1", "nonnegative whole number"),
+        ("Pen", "Office", "six", "nonnegative whole number"),
+        ("Pen", "Office", "2.5", "nonnegative whole number"),
+        ("Laptop Charger", "Electronics", "1", "already exists"),
+        ("laptop charger", "Electronics", "1", "already exists"),
+    ],
+    ids=[
+        "empty-name",
+        "blank-name",
+        "empty-category",
+        "blank-category",
+        "pipe-in-name",
+        "pipe-in-category",
+        "negative-quantity",
+        "nonnumeric-quantity",
+        "fractional-quantity",
+        "duplicate",
+        "duplicate-case",
+    ],
+)
+def test_validate_rejects_invalid_item(
+    sample_inventory, name, category, quantity, message
+):
+    # Arrange
+    before = deepcopy(sample_inventory)
+
+    # Act and Assert
+    with pytest.raises(ValueError, match=message):
+        im.validate_new_item(sample_inventory, name, category, quantity)
+
+    assert sample_inventory == before
